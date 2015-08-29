@@ -6,6 +6,6 @@
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]]
 
-  :plugins [[lein-ring "0.8.11"]]
+  :plugins [[lein-ring "0.9.6"]]
 
   :ring {:handler app.core/app})
