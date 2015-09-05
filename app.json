@@ -1,0 +1,8 @@
+{
+  "name": "clojure-hello-world",
+  "description": "clojure-hello-world for heroku",
+  "image": "heroku/clojure",
+  "addons": [
+    "heroku-postgresql"
+  ]
+}

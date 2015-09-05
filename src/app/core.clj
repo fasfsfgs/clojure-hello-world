@@ -1,18 +1,26 @@
 (ns app.core
-  (:use ring.util.response
-        ring.middleware.resource
-        ring.middleware.content-type
-        ring.middleware.params
-        ring.middleware.not-modified))
+  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
+            [compojure.handler :refer [site]]
+            [compojure.route :as route]
+            [clojure.java.io :as io]
+            [ring.adapter.jetty :as jetty]
+            [environ.core :refer [env]]))
 
-(defn handler [request]
-  (-> (response "dynamic response")
-      (content-type "text/html")
-      (charset "utf-8")))
+(defn splash []
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body (pr-str ["Hello" :from 'Heroku])})
 
-(def app
-  (-> handler
-      wrap-params
-      (wrap-resource "public")
-      wrap-content-type
-      wrap-not-modified))
+(defroutes app
+  (GET "/" []
+       (splash))
+  (ANY "*" []
+       (route/not-found (slurp (io/resource "404.html")))))
+
+(defn -main [& [port]]
+  (let [port (Integer. (or port (env :port) 5000))]
+    (jetty/run-jetty (site #'app) {:port port :join? false})))
+
+;; For interactive development:
+;; (.stop server)
+;; (def server (-main))
