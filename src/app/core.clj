@@ -7,10 +7,14 @@
             [camel-snake-kebab.core :as kebab]
             [environ.core :refer [env]]))
 
+(def sample (env :sample "sample-string-thing"))
+
 (defn splash []
   {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body (pr-str ["Oii" :from 'fasfsfgs])})
+   :headers {"Content-Type" "text/html"}
+   :body (for [kind ["camel" "snake" "kebab"]]
+           (format "<a href=\"/%s?input=%s\">%s %s</a><br />"
+                   kind sample kind sample))})
 
 (defroutes app
   (GET "/camel" {{input :input} :params}
@@ -32,7 +36,7 @@
        (route/not-found (slurp (io/resource "404.html")))))
 
 (defn -main [& [port]]
-  (let [port (Integer. (or port (env :port) 5000))]
+  (let [port (Integer. (or port (env :port 5000)))]
     (jetty/run-jetty (site #'app) {:port port :join? false})))
 
 ;; For interactive development:
