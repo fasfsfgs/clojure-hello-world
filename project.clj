@@ -1,4 +1,4 @@
-(defproject clojure-hello-world "0.1.0-SNAPSHOT"
+(defproject clojure-hello-world "1.0.0-SNAPSHOT"
 
   :description "learning the basics of clojure"
 
@@ -9,9 +9,7 @@
 
   :min-lein-version "2.0.0"
 
-  :plugins [
-            [environ/environ.lein "0.3.1"]
-           ]
+  :plugins [[environ/environ.lein "0.3.1"]]
 
   :hooks [environ.leiningen.hooks]
 
