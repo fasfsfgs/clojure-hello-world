@@ -2,10 +2,12 @@
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
             [clojure.java.io :as io]
+            [ring.util.response :refer [resource-response]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.middleware.nested-params :refer [wrap-nested-params]]
+            [ring.middleware.not-modified :refer [wrap-not-modified]]
             [camel-snake-kebab.core :as kebab]
             [clojure.java.jdbc :as db]
             [environ.core :refer [env]]))
@@ -29,7 +31,7 @@
               :sayings {:content input}))
 
 (defroutes appRoutes
-  (GET "/camel" {{input :input} :params}
+  (GET "/camel" [input]
        (record input)
        {:status 200
         :headers {"Content-Type" "text/plain"}
@@ -45,14 +47,17 @@
         :headers {"Content-Type" "text/plain"}
         :body (kebab/->kebab-case input)})
   (GET "/" []
-       (splash))
-  (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+       (resource-response "index.html" {:root "public"}))
+
+  (route/resources "/")
+
+  (route/not-found (slurp (io/resource "404.html"))))
 
 (def app
   (-> appRoutes
       (wrap-keyword-params)
-      (wrap-params)))
+      (wrap-params)
+      (wrap-not-modified)))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port 5000)))]
