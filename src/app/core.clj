@@ -3,11 +3,8 @@
             [compojure.route :as route]
             [clojure.java.io :as io]
             [ring.util.response :refer [resource-response]]
+            [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
-            [ring.middleware.nested-params :refer [wrap-nested-params]]
-            [ring.middleware.not-modified :refer [wrap-not-modified]]
             [camel-snake-kebab.core :as kebab]
             [clojure.java.jdbc :as db]
             [environ.core :refer [env]]))
@@ -48,16 +45,11 @@
         :body (kebab/->kebab-case input)})
   (GET "/" []
        (resource-response "index.html" {:root "public"}))
-
   (route/resources "/")
-
   (route/not-found (slurp (io/resource "404.html"))))
 
 (def app
-  (-> appRoutes
-      (wrap-keyword-params)
-      (wrap-params)
-      (wrap-not-modified)))
+  (wrap-defaults appRoutes api-defaults))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port 5000)))]

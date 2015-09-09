@@ -15,6 +15,6 @@ how to use:
 
 - cmd `lein ring server`
 
-- static content: http://localhost:3000/index.html
+- static content: http://localhost:5000
 
-- dynamic content: http://localhost:3000/
+- dynamic content: http://localhost:5000/

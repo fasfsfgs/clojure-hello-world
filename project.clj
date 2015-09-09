@@ -6,6 +6,7 @@
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
                  [compojure "1.4.0"]
+                 [ring/ring-defaults "0.1.5"]
                  [org.clojure/java.jdbc "0.4.1"]
                  [postgresql "9.3-1102.jdbc41"]
                  [camel-snake-kebab "0.3.2"]
