@@ -2,7 +2,7 @@
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
             [clojure.java.io :as io]
-            [ring.util.response :refer [resource-response]]
+            [ring.util.response :refer [resource-response content-type]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.adapter.jetty :as jetty]
             [camel-snake-kebab.core :as kebab]
@@ -44,7 +44,7 @@
         :headers {"Content-Type" "text/plain"}
         :body (kebab/->kebab-case input)})
   (GET "/" []
-       (resource-response "index.html" {:root "public"}))
+       (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (route/resources "/")
   (route/not-found (slurp (io/resource "404.html"))))
 
