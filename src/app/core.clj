@@ -2,54 +2,42 @@
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
             [clojure.java.io :as io]
-            [ring.util.response :refer [resource-response content-type]]
+            [ring.util.response :refer [resource-response content-type response]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+            [ring.middleware.json :refer [wrap-json-response]]
             [ring.adapter.jetty :as jetty]
-            [camel-snake-kebab.core :as kebab]
             [clojure.java.jdbc :as db]
             [environ.core :refer [env]]))
 
-(def sample (env :sample "sample-string-thing"))
+; DATABASE STUFF
+(def db-url (env :database-url "postgres://localhost:5432/testdb"))
 
-(defn splash []
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (concat (for [kind ["camel" "snake" "kebab"]]
-                   (format "<a href=\"/%s?input=%s\">%s %s</a><br />"
-                           kind sample kind sample))
-                 ["<hr /><ul>"]
-                 (for [s (db/query (env :database-url "postgres://localhost:5432/testdb")
-                                   ["select content from sayings"])]
-                   (format "<li>%s</li>" (:content s)))
-                 ["</ul>"])})
+(defn query-list [query]
+  (println (db/query db-url query))
+  (db/query db-url query))
 
 (defn record [input]
-  (db/insert! (env :database-url "postgres://localhost:5432/testdb")
+  (db/insert! db-url
               :sayings {:content input}))
 
+(defn db-test []
+  (response
+   (query-list ["select ps.id, ps.description, ps.active from payment_source ps order by ps.id asc"])))
+
+; (db-test)
+
 (defroutes appRoutes
-  (GET "/camel" [input]
-       (record input)
-       {:status 200
-        :headers {"Content-Type" "text/plain"}
-        :body (kebab/->camelCase input)})
-  (GET "/snake" {{input :input} :params}
-       (record input)
-       {:status 200
-        :headers {"Content-Type" "text/plain"}
-        :body (kebab/->snake_case input)})
-  (GET "/kebab" {{input :input} :params}
-       (record input)
-       {:status 200
-        :headers {"Content-Type" "text/plain"}
-        :body (kebab/->kebab-case input)})
+  (GET "/test" []
+       (db-test))
   (GET "/" []
        (content-type (resource-response "index.html" {:root "public"}) "text/html"))
   (route/resources "/")
   (route/not-found (slurp (io/resource "404.html"))))
 
 (def app
-  (wrap-defaults appRoutes api-defaults))
+  (-> appRoutes
+      wrap-json-response
+      (wrap-defaults api-defaults)))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port 5000)))]
