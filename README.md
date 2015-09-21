@@ -5,8 +5,6 @@ used stuff:
 
 - http://leiningen.org/
 
-- https://github.com/technomancy/leiningen
-
 - https://github.com/ring-clojure/ring
 
 - https://github.com/weavejester/lein-ring
