@@ -3,6 +3,9 @@ pom.xml.asc
 *jar
 /lib/
 /classes/
+/.idea/
+/node_modules/
+/resources/public/bundle.js
 /target/
 /checkouts/
 .lein-deps-sum
