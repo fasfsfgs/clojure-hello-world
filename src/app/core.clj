@@ -24,8 +24,6 @@
   (response
    (query-list ["select ps.id, ps.description, ps.active from payment_source ps order by ps.id asc"])))
 
-; (db-test)
-
 (defroutes appRoutes
   (GET "/test" []
        (db-test))

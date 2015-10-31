@@ -1,19 +1,28 @@
-var path = require('path');
+'use strict';
+
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  devtool: 'eval',
-  entry: './resources/client/index',
-  output: {
-    path: path.resolve(__dirname, './resources/public/'),
-    filename: 'bundle.js'
-  },
-  module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel-loader'],
-      exclude: /node_modules/,
-      include: __dirname
-    }]
-  }
+    entry: './resources/client/app.js',
+    output: {
+        path: __dirname + '/resources/public',
+        filename: 'bundle.js'
+    },
+
+    module: {
+        loaders: [{
+            // JS LOADER
+            test: /\.js$/,
+            loader: 'babel',
+            exclude: /node_modules/
+        }]
+    },
+
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './resources/client/index.html',
+        inject: true
+      })
+    ]
 };
