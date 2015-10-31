@@ -5,7 +5,7 @@ pom.xml.asc
 /classes/
 /.idea/
 /node_modules/
-/resources/public/bundle.js
+/resources/public/
 /target/
 /checkouts/
 .lein-deps-sum
